@@ -83,50 +83,45 @@
 % Configure titile
 \title{\vspace{-40pt}\Large RLU estimation}
 \author{\normalsize Thai Nguyen}
-\date{}
 
 \begin{document}
 \maketitle
 
-\section{Introduction}
-\subsection{Problem formulation}
+\section{Why RUL estimation?}
+\section{Mathematical formulation for RUL estimation problem}
+Suppose that we are provided with run-to-failure historical data of multiple machines of the same type. The historical data is supposed to cover a representative set of the considering machine type. The recored data of each machine ends when it reach a failure condition threshold. The objective is to learn a RUL model to predict the remaining lifetime of the considering machine type.
 
+\subsection{Training data}
+The training data is a set of the operation history of $N$ machines of the same type denoted as $\mathcal{X} = \left\lbrace X^n \mid n=1, ..., N \right\rbrace$. There are $M$ measurements that quantify their health behavior during their operations (e.g. sensors that are installed on these machine to monitor their conditions). The data from the $n^{th}$ machine throughout its useful lifetime produces a multivariate time series $X^n \in \mathbb{R}^{T^n \times M}$ in which $T^n$ denotes the total number of time steps of machine $n$ throughout is lifetime (in other words, $T^n$ is the failure time of component $n$). We use the notation $X_t^n \in \mathbb{R}^M$ to denote the $t^{th}$ timestamp of $X^n$ where $t \in \left\lbrace 1, ..., T^n \right\rbrace$. Indeed, $X_t^n$ is a vector of $M$ sensor values.
 
-\subsection{C-MAPSS dataset}
-This dataset was generated with the C-MAPSS simulator. C-MAPSS stands for \red{\enquote{Commercial Modular Aero-Propulsion System Simulation}} and it is a tool for the simulation of realistic large commercial turbofan engine data. The C-MAPSS dataset contains 4 sub-datasets generated under different operating and fault conditions which are further divided into training and test sets. A summarization of this dataset is given as belows:
+\subsection{Testing data}
+The test set consists of historical data of $K$ machines of the same type used in the training data denoted as $\mathcal{Z}= \left\lbrace Z^k \mid k=1, ..., K \right\rbrace$ in which $Z^k$ is a time series of $k^{th}$ machine. The notation $Z_t^k \in \mathbb{R}^M$ is used to denote the $k^{th}$ timestamp of $Z^k$ where $t \in \left\lbrace 1, ..., L^k \right\rbrace$ where $L^k$ is the total number of time steps related to machine $k$ in the test set. Obviously, the test set will not consist of all time steps up to the failure point, i.e.., $L^k$ is generally smaller than the the failure time of component $k$ denoted as $\bar{L}^k$.
 
-\begin{table}[H]
-	\centering
-	\begin{tabular}{lcccc}
-		\hline
-		Dataset                         & FD001 & FD002 & FD003 & FD004 \\ \hline \hline
-		Number of training trajectories & 100   & 260   & 100   & 249   \\ \hline
-		Number of test trajectories     & 100   & 259   & 100   & 248   \\ \hline
-		Number of operating conditions  &       &       &       &       \\ \hline
-		Number of fault modes           &       &       &       &       \\ \hline
-	\end{tabular}
-	\caption{C-MAPSS dataset } 
-\end{table} 
+We focus on estimating RUL of component $k$, $\bar{L}^k - L^k$, given the data from time step 1 to $L^k$. Note that $\bar{L}^k - L^k$ is also provided in the test set.
 
-The data are provided as a zip-compressed \blue{text} file with \blue{26 columns} of numbers, \blue{separated by spaces}. Each row in the data is a snapshot of data taken during a \red{single operating time cycle}, which includes 26 columns:
-\begin{itemize}
-	\item The first column represents the \red{engine ID}.
-	\item The second column represents the \red{current operational cycle number}.
-	\item Columns from 3 to 5 are the \red{three operational settings} that have substantial effects on engine performance.
-	\item Columns from 6 to 26 represent the \red{21 sensor values}.
-\end{itemize}
-\subsection{Objective}
-The goal is to \red{predict the number of remaining operational cycles before failure in the test set}, i.e., the number of operational cycles after the last cycle that the engine will continue to operate.
+\section{CMAPSS dataset}
+\section{Data preparation}
+\subsection{RUL target}
+We can generate the RUL for very time steps in a training trajectory $X^n$ based on $T^n$. In the literature, there are two common models for generating RUL given the failure time, namely, linear and piece-wise linear model degradation model. These two models are mathematically presented in the following.
 
-\section{Data processing}
-\subsection{Piece-wise linear RUL target function}
+\paragraph{Linear model degradation model} This kind of RUL model is very obvious considering the fact that we have the the failure point of each training trajectory $(T^n)$. The RUL of machine $n$ at time step $t$ in the training set, $R_t^n$, is calculated as belows:
+\begin{equation}
+	R_t^n = T^n - t
+\end{equation}
+
+\paragraph{Piece-wise linear degradation model}  Since the degradation of a machine will generally not be noticeable unit it has been operating for some period of time. Therefore, it is probably reasonable to estimate RUL of a machine until it begins to degrade. For this reason, it seem to be ok to estimate the RUL when the machine is new as constant. As a result, the piece-wise linear degradation model is proposed to set an upper limit on the RUL target as belows:
+\begin{equation}
+	 R_t^n = 
+	\begin{cases}
+		R_t ^n = R^{max}  & \text{if } t \le T^{max} \\ 
+		R_t^n = T^n - t   & \text{otherwise} 
+	\end{cases}
+\end{equation}
+
 \subsection{Data normalization}
-The goal of normalization is to transform features to be on a similar scale which can improves the performance and training stability of the model. It is often used when data futures are on \red{drastically difference scales}.
 
-\subsubsection{Max-min normalization}
-\subsubsection{Clipping}
-\subsubsection{Log scaling}
-\subsubsection{Z-score}
+
+
 \printbibliography
 
 \end{document}
