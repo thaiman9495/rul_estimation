@@ -27,8 +27,8 @@ We can generate the RUL for very time steps in a training trajectory $X^n$ based
 
    $$
    R_t^n = T^n - t
-
    $$
+   
 2. Piecewise linear degradation model
    Since the degradation of a machine will generally not be noticeable unit it has been operating for some period of time. Therefore, it is probaly reasonable to estimate RUL of a machine unitl it begins to degrade. For this reason, it seem to be ok to estimate the RLU when the machine is new as constant. As a result, the piecewise linear degradation model is propsoed to set an upper limit on the RUL target as belows:
 
@@ -38,7 +38,6 @@ We can generate the RUL for very time steps in a training trajectory $X^n$ based
    R_t ^n = R^{max}  & \text{if } t \le T^{max} \\ 
    R_t^n = T^n - t   & \text{otherwise} 
    \end{cases}
-
    $$
 
    in which $T^{max}$ is the maximal time step for considering the machine as new and $R^{max}$ is the upper litmit of RUL.
