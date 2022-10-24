@@ -18,3 +18,11 @@ outputs/
 
 # Log files
 log/
+doc/report/*.aux
+doc/report/*.bbl
+doc/report/*.bcf
+doc/report/*.blg
+doc/report/*.log
+doc/report/*.out
+doc/report/*.run.xml
+doc/report/*.synctex.gz

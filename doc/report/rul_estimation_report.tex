@@ -1,0 +1,146 @@
+\documentclass{article}
+\usepackage{lmodern}
+
+% Use pdf version 1.6 or higher
+\pdfminorversion=6
+
+% Math font
+\usepackage{amsmath, amsthm, amssymb}
+\DeclareMathOperator*{\argmax}{argmax}
+\usepackage{bm}
+\setcounter{MaxMatrixCols}{20}
+
+% Configure graphic
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage{float}
+\graphicspath{{figures/}}
+
+% Change text's size
+\usepackage{scrextend}
+\changefontsizes{12}
+
+% Remove identation at beginning of paragraph
+%\usepackage{indentfirst}
+\usepackage{parskip}
+\setlength{\parindent}{0pt}
+
+% Change line spacing
+\renewcommand{\baselinestretch}{1.5}
+
+% Format document's shape
+\usepackage[left=1.0cm, right=1.0cm, top=2.0cm, bottom=2.0cm]{geometry}
+
+% More beautiful quotation marks
+\usepackage{csquotes}                
+
+% Color tex
+\usepackage{color}
+
+% Configure reference
+% Note in TeXstudio:
+% Options > Configure TeXstudio > Build > Defaut Bibbliography Tool
+% Change "BibTeX" to "Biber"
+% Bib file must incule extension
+\usepackage[style=nature, backend=biber]{biblatex}
+\addbibresource{reference.bib}
+
+% Creat bookmark for PDF file
+\usepackage{hyperref}
+
+\usepackage{booktabs}
+\usepackage{bigstrut}
+
+% Set the depth of table of contents
+\setcounter{tocdepth}{5}
+
+% Extend section numbering
+\setcounter{secnumdepth}{3}
+
+% Write pseudo-code
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+
+\usepackage{multirow}
+\usepackage{longtable}
+\usepackage{makecell}
+\usepackage{diagbox}
+\usepackage{appendix}
+
+\DeclareRobustCommand{\&}{%
+	\ifdim\fontdimen1\font>0pt
+	\textsl{\symbol{`\&}}%
+	\else
+	\symbol{`\&}%
+	\fi
+}
+
+% Some customized comments to make life easier
+\newcommand{\blue}[1]{\textcolor{blue}{#1}}
+\newcommand{\red}[1]{\textcolor{red}{#1}}
+
+
+% Configure titile
+\title{\vspace{-40pt}\Large RLU estimation}
+\author{\normalsize Thai Nguyen}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section{Introduction}
+\subsection{Problem formulation}
+
+
+\subsection{C-MAPSS dataset}
+This dataset was generated with the C-MAPSS simulator. C-MAPSS stands for \red{\enquote{Commercial Modular Aero-Propulsion System Simulation}} and it is a tool for the simulation of realistic large commercial turbofan engine data. The C-MAPSS dataset contains 4 sub-datasets generated under different operating and fault conditions which are further divided into training and test sets. A summarization of this dataset is given as belows:
+
+\begin{table}[H]
+	\centering
+	\begin{tabular}{lcccc}
+		\hline
+		Dataset                         & FD001 & FD002 & FD003 & FD004 \\ \hline \hline
+		Number of training trajectories & 100   & 260   & 100   & 249   \\ \hline
+		Number of test trajectories     & 100   & 259   & 100   & 248   \\ \hline
+		Number of operating conditions  &       &       &       &       \\ \hline
+		Number of fault modes           &       &       &       &       \\ \hline
+	\end{tabular}
+	\caption{C-MAPSS dataset } 
+\end{table} 
+
+The data are provided as a zip-compressed \blue{text} file with \blue{26 columns} of numbers, \blue{separated by spaces}. Each row in the data is a snapshot of data taken during a \red{single operating time cycle}, which includes 26 columns:
+\begin{itemize}
+	\item The first column represents the \red{engine ID}.
+	\item The second column represents the \red{current operational cycle number}.
+	\item Columns from 3 to 5 are the \red{three operational settings} that have substantial effects on engine performance.
+	\item Columns from 6 to 26 represent the \red{21 sensor values}.
+\end{itemize}
+\subsection{Objective}
+The goal is to \red{predict the number of remaining operational cycles before failure in the test set}, i.e., the number of operational cycles after the last cycle that the engine will continue to operate.
+
+\section{Data processing}
+\subsection{Piece-wise linear RUL target function}
+\subsection{Data normalization}
+The goal of normalization is to transform features to be on a similar scale which can improves the performance and training stability of the model. It is often used when data futures are on \red{drastically difference scales}.
+
+\subsubsection{Max-min normalization}
+\subsubsection{Clipping}
+\subsubsection{Log scaling}
+\subsubsection{Z-score}
+\printbibliography
+
+\end{document}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
