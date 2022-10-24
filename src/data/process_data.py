@@ -52,9 +52,22 @@ def add_rul(data, max_rul, piecewise_linear_rul=True):
     return processed_data
 
 
+def normalize_data(data):
+    """
+    This functions aims to normalize data
+
+    Args:
+        data (pd.DataFrame) : CMAPSS training dataset with RUL column
+
+    Returns:
+
+    """
+    pass
+
+
 def process_data(path_train_data: Path, path_test_data: Path, max_rul: float):
     train_df = pd.read_csv(path_train_data, sep='\s+', header=None, names=cmapss_column.name_list)
-    test_df = pd.read_csv(path_train_data, sep='\s+', header=None, names=cmapss_column.name_list)
+    test_df = pd.read_csv(path_test_data, sep='\s+', header=None, names=cmapss_column.name_list)
 
     # Add RUL to training data
     train_df = add_rul(train_df, max_rul)

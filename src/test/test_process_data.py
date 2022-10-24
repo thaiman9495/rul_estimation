@@ -8,7 +8,7 @@ if __name__ == '__main__':
     # Choose your tests
     # 0: add_rul()
     # 1: normalize_data()
-    test = 0
+    test = 1
 
     # Configure paths
     path_parent = Path.cwd().parents[1]  # ../rul_estimation
@@ -29,4 +29,3 @@ if __name__ == '__main__':
 
     if test == 2:
         pass
-    
