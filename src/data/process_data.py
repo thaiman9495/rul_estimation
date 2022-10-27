@@ -81,24 +81,73 @@ def add_rul(data, max_rul, piecewise_linear_rul=True):
     return processed_data
 
 
-def process_data(path_train_data: Path, path_test_data: Path, max_rul: float):
-    train_df = pd.read_csv(path_train_data, sep='\s+', header=None, names=cmapss_column.name_list)
-    test_df = pd.read_csv(path_test_data, sep='\s+', header=None, names=cmapss_column.name_list)
+def process_train_data(data_name: str, max_rul: float):
+    path_parent = Path.cwd().parents[1]  # ../rul_estimation
+    path_data = path_parent.joinpath('data/raw/cmapss/' + 'train_' + data_name + '.txt')
+    data = pd.read_csv(path_data, sep='\s+', header=None, names=cmapss_column.name_list)
 
-    # Apply max-min normalization for training data
+    # Apply z-score normalization for training data
+    data = normalize_data(data)
 
     # Add RUL to training data
-    train_df = add_rul(train_df, max_rul)
+    data = add_rul(data, max_rul)
 
     # Convert to list of torch tensors
-    train_df = train_df.groupby(cmapss_column.engine_id)
+    processed_data = []
+    data = data.groupby(cmapss_column.engine_id)
+    n_sq = data.ngroups
 
-    x = torch.Tensor(train_df.get_group(1).iloc[:, 2:-1].to_numpy())
-    y = torch.Tensor(train_df.get_group(1).iloc[:, -1].to_numpy())
+    for i in range(1, n_sq + 1):
+        # feature_sq has a shape of (T x M) in which T is sequence length and T is the number of sensor values
+        # target_sq have shape of (T x 1)
+        feature_sq = torch.FloatTensor(data.get_group(i).iloc[:, 2:-1].to_numpy())
+        target_sq = torch.unsqueeze(torch.FloatTensor(data.get_group(i).iloc[:, -1].to_numpy()), 1)
 
-    print(x.shape)
-    print(y.shape)
+        processed_data.append((feature_sq, target_sq))
+
+    # Split data into training (75%) and validation (25%) set
+    idx = int(0.75 * n_sq)
+    processed_train_data = processed_data[0: idx]
+    processed_val_data = processed_data[idx:]
+
+    # Save the processed data
+    torch.save(processed_train_data, path_parent.joinpath('data/processed/cmapss/' + 'train_' + data_name + '.pt'))
+    torch.save(processed_val_data, path_parent.joinpath('data/processed/cmapss/' + 'val_' + data_name + '.pt'))
+
+
+def process_test_data(data_name: str):
+    path_parent = Path.cwd().parents[1]  # ../rul_estimation
+    path_feature_data = path_parent.joinpath('data/raw/cmapss/' + 'test_' + data_name + '.txt')
+    path_target_data = path_parent.joinpath('data/raw/cmapss/' + 'RUL_' + data_name + '.txt')
+
+    feature_data = pd.read_csv(path_feature_data, sep='\s+', header=None, names=cmapss_column.name_list)
+    target_data = pd.read_csv(path_target_data, sep='\s+', header=None)
+
+    # Apply z-score normalization to feature data
+    data = normalize_data(feature_data)
+
+    # Convert to list of torch tensors
+    processed_data = []
+    data = feature_data.groupby(cmapss_column.engine_id)
+    n_sq = data.ngroups
+
+    for i in range(1, n_sq + 1):
+        # feature_sq has a shape of (T x M) in which T is sequence length and T is the number of sensor values
+        # target have shape of (1 x 1)
+        feature_sq = torch.FloatTensor(data.get_group(i).iloc[:, 2:-1].to_numpy())
+        target = torch.unsqueeze(torch.FloatTensor(target_data.iloc[i-1, :].to_numpy()), 1)
+
+        processed_data.append((feature_sq, target))
+
+    # Save processed data
+    torch.save(processed_data, path_parent.joinpath('data/processed/cmapss/' + 'test_' + data_name + '.pt'))
 
 
 if __name__ == '__main__':
-    print('Thai man is very handsome!')
+    # Names of sub-dataset of CMAPSS dataset
+    data_names = ['FD001', 'FD002', 'FD003', 'FD004']
+
+    # Process data
+    for data_name in data_names:
+        process_train_data(data_name, 130)
+        process_test_data(data_name)
