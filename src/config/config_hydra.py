@@ -20,6 +20,7 @@ class LstmModel:
 @dataclass
 class Config:
     mode: str = 'training'
+    dataset_name: str = 'FD001'
 
     n_epochs: int = 1500
     batch_size: int = 4
@@ -30,10 +31,10 @@ class Config:
 
 
 cs = ConfigStore.instance()
-cs.store(name="config", node=Config)
+cs.store(name="config_to_yaml", node=Config)
 
 
-@hydra.main(version_base=None, config_name="config")
+@hydra.main(version_base=None, config_name="config_to_yaml")
 def dump_yaml(cfg: Config):
     path = Path.cwd().parents[1].joinpath('config/config.yaml')
     path.parent.mkdir(parents=True, exist_ok=True)
