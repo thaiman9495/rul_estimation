@@ -1,0 +1,19 @@
+mode: training
+dataset_name: FD001
+
+n_epochs: 3000
+batch_size: 4
+lr: 0.0001
+device: cuda:0
+
+lstm_model:
+  input_size: 24
+  output_size_1: 64
+  hidden_size_1:
+  - 64
+  - 64
+  hidden_size_2:
+  - 64
+  - 32
+  hidden_size_lstm: 64
+  num_layers_lstm: 1
